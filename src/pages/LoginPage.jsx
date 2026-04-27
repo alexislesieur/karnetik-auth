@@ -19,8 +19,7 @@ export default function LoginPage() {
 
     try {
       await login(email, password)
-      // Redirection vers l'app web après connexion
-      window.location.href = import.meta.env.VITE_APP_URL || '/login-success'
+      navigate('/apps')
     } catch (err) {
       if (err.data?.email_unverified) {
         navigate(`/verify-email?email=${encodeURIComponent(email)}`)
