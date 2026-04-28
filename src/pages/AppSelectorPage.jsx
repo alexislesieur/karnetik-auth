@@ -29,6 +29,12 @@ export default function AppSelectorPage() {
 
   const available = appList.filter((a) => a.roles.includes(user.role))
   const greeting = user.first_name ? 'Bonjour, ' + user.first_name + '.' : 'Bonjour.'
+  const token = localStorage.getItem('karnetik_token')
+
+  function getUrl(item) {
+    if (item.soon || !item.url) return null
+    return item.url + '?token=' + encodeURIComponent(token)
+  }
 
   return (
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',padding:24}}>
@@ -41,7 +47,7 @@ export default function AppSelectorPage() {
         <h1 style={{fontSize:36,fontWeight:700,letterSpacing:-1,lineHeight:1.05,margin:'0 0 12px'}}>{greeting}</h1>
         <p style={{fontSize:14,color:'var(--ink-soft)',lineHeight:1.6,margin:'0 0 36px'}}>Choisissez votre espace.</p>
         <div style={{display:'flex',flexDirection:'column',gap:12}}>
-          {available.map((item) => <AppCard key={item.id} item={item}/>)}
+          {available.map((item) => <AppCard key={item.id} item={item} url={getUrl(item)}/>)}
         </div>
         <div style={{marginTop:36,paddingTop:24,borderTop:'1px solid var(--rule)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
           <span style={{fontFamily:'var(--mono)',fontSize:10,letterSpacing:1,color:'var(--ink-mute)',textTransform:'uppercase'}}>{user.email}</span>
@@ -52,11 +58,11 @@ export default function AppSelectorPage() {
   )
 }
 
-function AppCard({item}) {
+function AppCard({item, url}) {
   const [h, setH] = useState(false)
   const disabled = item.soon
   const Tag = disabled ? 'div' : 'a'
-  const linkProps = disabled ? {} : { href: item.url }
+  const linkProps = disabled ? {} : { href: url }
   return (
     <Tag {...linkProps} onMouseEnter={() => !disabled && setH(true)} onMouseLeave={() => setH(false)} style={{display:'flex',alignItems:'center',gap:20,background:'var(--panel)',border:'1px solid '+(h?'var(--accent)':'var(--rule)'),borderRadius:6,padding:24,textDecoration:'none',color: disabled ? 'var(--ink-mute)' : 'var(--ink)',transition:'border 120ms',cursor: disabled ? 'default' : 'pointer',opacity: disabled ? 0.5 : 1}}>
       <div style={{width:48,height:48,border:'1px solid var(--rule)',borderRadius:6,display:'flex',alignItems:'center',justifyContent:'center',color: disabled ? 'var(--ink-mute)' : 'var(--accent)',flexShrink:0}}>
